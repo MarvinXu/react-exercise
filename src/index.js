@@ -4,18 +4,24 @@ import './index.css';
 import data from './mock';
 console.log(data)
 class TreeNode extends React.Component {
-  render() {
-    const childNode = this.props.hasChild ?
+  renderChildren() {
+    const {data} = this.props;
+    const hasChildren = data.children && data.children.length > 0
+    const childNode = hasChildren ?
       <div className="tree-node__children">
-        {this.props.data.children.map(d =>
+        {data.children.map(d =>
           <TreeNode key={d.id} data={d} />
         )}
       </div> :
       null;
+    return childNode;
+  }
+  render() {
+
     return (
       <div className="tree-node">
         <div className="tree-node__content">{this.props.data.label}</div>
-        {childNode}
+        {this.renderChildren()}
       </div>
     );
   }
@@ -25,7 +31,7 @@ class Tree extends React.Component {
 
   render() {
     const nodes = this.props.data.map(d =>
-      <TreeNode key={d.id} data={d} hasChild={!!d.children.length}/>
+      <TreeNode key={d.id} data={d}/>
     );
     return (
       <div className="tree">
