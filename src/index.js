@@ -4,23 +4,44 @@ import './index.css';
 import data from './mock';
 console.log(data)
 class TreeNode extends React.Component {
-  renderChildren() {
+  static defaultProps = {
+    checkState: 'unchecked'
+  }
+  hasChildren () {
     const {data} = this.props;
-    const hasChildren = data.children && data.children.length > 0
-    const childNode = hasChildren ?
+    return data.children && data.children.length > 0
+  }
+  renderChildren() {
+    const childNode = this.hasChildren() ?
       <div className="tree-node__children">
-        {data.children.map(d =>
+        {this.props.data.children.map(d =>
           <TreeNode key={d.id} data={d} />
         )}
       </div> :
       null;
     return childNode;
   }
+  renderCheckbox() {
+    return <span className={'iconfont icon-checkbox-' + this.props.checkState}></span>
+  }
+  getCount() {
+    if (this.hasChildren()) {
+      let count = 0;
+      this.props.data.children.forEach(d => {
+        count += d.count
+      });
+      return count;
+    }
+    return this.props.data.count;
+  }
   render() {
-
     return (
       <div className="tree-node">
-        <div className="tree-node__content">{this.props.data.label}</div>
+        <div className="tree-node__content">
+          {this.renderCheckbox()}
+          {this.props.data.label}
+          {this.getCount()}
+        </div>
         {this.renderChildren()}
       </div>
     );

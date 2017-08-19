@@ -1,3 +1,5 @@
+@import "./assets/iconfont/iconfont.css";
+
 .tree-node__children{
     text-indent: 2em;
 }
