@@ -6,16 +6,16 @@ import data from './mock';
 class TreeNodeContent extends React.Component {
   static defaultProps = {
     checkState: 'unchecked'
-  }
+  };
 
   render() {
-    const {data, count, checkState} = this.props;
+    const {data, count, checkState, onClick} = this.props;
     const hasChildren = !!data.children;
     const checkbox = <span className={'tree-node__checkbox ' + checkState}></span>;
     return (
       <div
         className={'tree-node__content' + (hasChildren ? ' parent' : '')}
-        onClick={() => this.props.onClick(data.id)}>
+        onClick={() => onClick(data.id)}>
         {checkbox}
         <span className="tree-node__label">{data.label}</span>
         <span className="tree-node__count">{count}</span>
@@ -34,13 +34,16 @@ class Tree extends React.Component {
 
   render() {
     const {data} = this.props;
-    const {checkStates} = this.state;
 
     const clickHandler = (id) => {
-      let {checkStates} = this.state;
+      const {checkStates} = this.state;
       const node = getNodeById(id, data);
+
+      // 计算当前节点check状态
       const currentCheckState = checkStates[id] === 'checked' ? 'unchecked' : 'checked';
       checkStates[id] = currentCheckState;
+
+      // 计算其他联动节点check状态
       if (node.children) {
         node.children.forEach(child => {
           checkStates[child.id] = currentCheckState;
@@ -49,6 +52,7 @@ class Tree extends React.Component {
         const parentNode = findParentNode(id, data);
         const isAllChecked = parentNode.children.every(child => checkStates[child.id] === 'checked');
         const isSomeChecked = parentNode.children.some(child => checkStates[child.id] === 'checked');
+
         if (isAllChecked) {
           checkStates[parentNode.id] = 'checked';
         } else if (isSomeChecked) {
@@ -57,17 +61,28 @@ class Tree extends React.Component {
           checkStates[parentNode.id] = 'unchecked';
         }
       }
+
       this.setState({
         checkStates: checkStates
       })
     };
 
+    const clearCheckbox = () => {
+      this.setState({
+        checkStates: {}
+      });
+    };
+
     const renderTreeNode = () => {
+      const {checkStates} = this.state;
+
       return data.map(parent => {
+        // 计算父节点总count数
         let count = 0;
         parent.children.forEach(child => {
           count += child.count;
         });
+
         return (
           <div className="tree-node" key={parent.id}>
             <TreeNodeContent
@@ -84,17 +99,11 @@ class Tree extends React.Component {
                     count={child.count}
                     checkState={checkStates[child.id]}
                     onClick={clickHandler}/>
-                )
+                );
               })}
             </div>
           </div>
         );
-      });
-    };
-
-    const clearCheckbox = () => {
-      this.setState({
-        checkStates: {}
       });
     };
 
