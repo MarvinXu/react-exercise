@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import data from './mock';
-console.log(data)
+
 class TreeNodeContent extends React.Component {
   static defaultProps = {
     checkState: 'unchecked'
@@ -10,14 +10,15 @@ class TreeNodeContent extends React.Component {
 
   render() {
     const {data, count, checkState} = this.props;
-    const checkbox = <span className={'iconfont icon-checkbox-' + checkState}></span>;
+    const hasChildren = !!data.children;
+    const checkbox = <span className={'tree-node__checkbox ' + checkState}></span>;
     return (
       <div
-        className="tree-node__content"
+        className={'tree-node__content' + (hasChildren ? ' parent' : '')}
         onClick={() => this.props.onClick(data.id)}>
         {checkbox}
-        {data.label}
-        {count}
+        <span className="tree-node__label">{data.label}</span>
+        <span className="tree-node__count">{count}</span>
       </div>
     );
   }
@@ -91,18 +92,36 @@ class Tree extends React.Component {
       });
     };
 
+    const clearCheckbox = () => {
+      this.setState({
+        checkStates: {}
+      });
+    };
+
     return (
       <div className="tree">
-        {renderTreeNode()}
+        <div className="tree__title">热聘职位</div>
+        <a href="javascript:;" className="tree__clear" onClick={clearCheckbox}>清空</a>
+        <div className="tree__content">
+          {renderTreeNode()}
+        </div>
       </div>
     );
   }
 }
 
+function SideBar() {
+  return (
+    <div className="sidebar">
+      <Tree data={data}/>
+    </div>
+  )
+}
+
 // ========================================
 
 ReactDOM.render(
-  <Tree data={data}/>,
+  <SideBar/>,
   document.getElementById('root')
 );
 
