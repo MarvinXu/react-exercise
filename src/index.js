@@ -15,7 +15,7 @@ class TreeNode extends React.Component {
     const childNode = this.hasChildren() ?
       <div className="tree-node__children">
         {this.props.data.children.map(d =>
-          <TreeNode key={d.id} data={d} />
+          this.props.renderTreeNode(d)
         )}
       </div> :
       null;
@@ -38,6 +38,7 @@ class TreeNode extends React.Component {
     return (
       <div className="tree-node">
         <div className="tree-node__content">
+          {this.props.data.id}
           {this.renderCheckbox()}
           {this.props.data.label}
           {this.getCount()}
@@ -49,14 +50,40 @@ class TreeNode extends React.Component {
 }
 
 class Tree extends React.Component {
-
+  constructor() {
+    super();
+    this.state = {
+      checkStates: {}
+    };
+  }
+  // componentWillMount() {
+  //   console.log('~~~~~~~~~~', this.props);
+  //   let {checkStates} = this.state;
+  //   this.props.data.forEach(d => {
+  //     Object.assign(checkStates, {
+  //       [d.id]: 'unchecked'
+  //     })
+  //   })
+  //   this.setState({
+  //     checkStates: checkStates
+  //   })
+  // }
+  renderTreeNode(data) {
+    let me = this;
+    console.log(me.state)
+    // const checkState = checkStates[data.id];
+    return <TreeNode key={data.id}
+                     data={data}
+                     // checkState={checkState}
+                     renderTreeNode={this.renderTreeNode}/>
+  }
   render() {
-    const nodes = this.props.data.map(d =>
-      <TreeNode key={d.id} data={d}/>
+    const treeNodes = this.props.data.map(d =>
+      this.renderTreeNode(d)
     );
     return (
       <div className="tree">
-        {nodes}
+        {treeNodes}
       </div>
     );
   }

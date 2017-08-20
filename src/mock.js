@@ -1,10 +1,10 @@
 const departments = [
   {
-    id: 1,
+    departmentId: 1,
     label: '工程研发部门'
   },
   {
-    id: 2,
+    departmentId: 2,
     label: '产品设计部门'
   }
 ]
@@ -55,9 +55,20 @@ const positions = [
     count: 8,
     departmentId: 2
   }
-].map((item, index) => Object.assign(item, {id: index + 1}))
+]
 
-const res = departments.map(dep => Object.assign(dep, {
-  children: positions.filter(pos => pos.departmentId === dep.id)
-}))
+let count = 0;
+const res = departments.map(dep => {
+  count ++;
+  return Object.assign(dep, {
+    id: count,
+    children: positions.filter(pos => pos.departmentId === dep.departmentId)
+      .map(pos => {
+        count ++;
+        return Object.assign(pos, {
+          id: count
+        })
+      })
+  })
+})
 export default res
